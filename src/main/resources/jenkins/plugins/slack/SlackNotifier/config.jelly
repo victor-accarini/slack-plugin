@@ -12,6 +12,12 @@
         <f:checkbox name="slackNotifyFailure" value="true" checked="${instance.getNotifyFailure()}"/>
     </f:entry>
 
+    <f:optionalBlock name="includeCustomFailureMessage" title="Include Custom Failure Message" checked="${instance.includeCustomFailureMessage()}">
+        <f:entry title="Custom Failure Message" help="/plugin/slack/help-projectConfig-slackCustomFailureMessage.html">
+            <f:textarea name="customFailureMessage" value="${instance.getCustomFailureMessage()}"/>
+        </f:entry>
+    </f:optionalBlock>
+
     <f:entry title="Notify Not Built">
         <f:checkbox name="slackNotifyNotBuilt" value="true" checked="${instance.getNotifyNotBuilt()}"/>
     </f:entry>
@@ -25,7 +31,6 @@
             <f:textarea name="customSuccessMessage" value="${instance.getCustomSuccessMessage()}"/>
         </f:entry>
     </f:optionalBlock>
-
 
     <f:entry title="Notify Unstable">
         <f:checkbox name="slackNotifyUnstable" value="true" checked="${instance.getNotifyUnstable()}"/>

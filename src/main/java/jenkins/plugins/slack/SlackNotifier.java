@@ -64,6 +64,8 @@ public class SlackNotifier extends Notifier {
     private String customMessage;
     private boolean includeCustomSuccessMessage;
     private String customSuccessMessage;
+    private boolean includeCustomFailureMessage;
+    private String customFailureMessage;
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -192,6 +194,14 @@ public class SlackNotifier extends Notifier {
         return customSuccessMessage;
     }
 
+    public boolean includeCustomFailureMessage() {
+        return includeCustomFailureMessage;
+    }
+
+    public String getCustomFailureMessage() {
+        return customFailureMessage;
+    }
+
     @DataBoundSetter
     public void setStartNotification(boolean startNotification) {
         this.startNotification = startNotification;
@@ -253,18 +263,28 @@ public class SlackNotifier extends Notifier {
     }
 
     @DataBoundSetter
-    public void setIncludeCustomSuccessMessage(boolean includeCustomSuccessMessage) {
-        this.includeCustomSuccessMessage = includeCustomSuccessMessage;
-    }
-
-    @DataBoundSetter
     public void setCustomMessage(String customMessage) {
         this.customMessage = customMessage;
     }
 
     @DataBoundSetter
+    public void setIncludeCustomSuccessMessage(boolean includeCustomSuccessMessage) {
+        this.includeCustomSuccessMessage = includeCustomSuccessMessage;
+    }
+
+    @DataBoundSetter
     public void setCustomSuccessMessage(String customSuccessMessage) {
         this.customSuccessMessage = customSuccessMessage;
+    }
+
+    @DataBoundSetter
+    public void setIncludeCustomFailureMessage(boolean includeCustomFailureMessage) {
+        this.includeCustomFailureMessage = includeCustomFailureMessage;
+    }
+
+    @DataBoundSetter
+    public void setCustomFailureMessage(String customFailureMessage) {
+        this.customFailureMessage = customFailureMessage;
     }
 
     @DataBoundConstructor
@@ -276,7 +296,9 @@ public class SlackNotifier extends Notifier {
                          final String sendAs, final boolean startNotification, final boolean notifyAborted, final boolean notifyFailure,
                          final boolean notifyNotBuilt, final boolean notifySuccess, final boolean notifyUnstable, final boolean notifyRegression, final boolean notifyBackToNormal,
                          final boolean notifyRepeatedFailure, final boolean includeTestSummary, final boolean includeFailedTests,
-                         CommitInfoChoice commitInfoChoice, boolean includeCustomMessage, String customMessage, boolean includeCustomSuccessMessage, String customSuccessMessage) {
+                         CommitInfoChoice commitInfoChoice, boolean includeCustomMessage, String customMessage,
+                         boolean includeCustomSuccessMessage, String customSuccessMessage,
+                         boolean includeCustomFailureMessage, String customFailureMessage) {
         super();
         this.baseUrl = baseUrl;
         if(this.baseUrl != null && !this.baseUrl.isEmpty() && !this.baseUrl.endsWith("/")) {
@@ -304,6 +326,8 @@ public class SlackNotifier extends Notifier {
         this.customMessage = customMessage;
         this.includeCustomSuccessMessage = includeCustomSuccessMessage;
         this.customSuccessMessage = customSuccessMessage;
+        this.includeCustomFailureMessage = includeCustomFailureMessage;
+        this.customFailureMessage = customFailureMessage;
     }
 
     public BuildStepMonitor getRequiredMonitorService() {
@@ -467,9 +491,12 @@ public class SlackNotifier extends Notifier {
             String customMessage = sr.getParameter("customMessage");
             boolean includeCustomSuccessMessage = "on".equals(sr.getParameter("includeCustomSuccessMessage"));
             String customSuccessMessage = sr.getParameter("customSuccessMessage");
+            boolean includeCustomFailureMessage = "on".equals(sr.getParameter("includeCustomFailureMessage"));
+            String customFailureMessage = sr.getParameter("customFailureMessage");
             return new SlackNotifier(baseUrl, teamDomain, token, botUser, room, tokenCredentialId, sendAs, startNotification, notifyAborted,
                     notifyFailure, notifyNotBuilt, notifySuccess, notifyUnstable, notifyRegression, notifyBackToNormal, notifyRepeatedFailure,
-                    includeTestSummary, includeFailedTests, commitInfoChoice, includeCustomMessage, customMessage, includeCustomSuccessMessage, customSuccessMessage);
+                    includeTestSummary, includeFailedTests, commitInfoChoice, includeCustomMessage, customMessage,
+                    includeCustomSuccessMessage, customSuccessMessage, includeCustomFailureMessage, customFailureMessage);
         }
 
         @Override

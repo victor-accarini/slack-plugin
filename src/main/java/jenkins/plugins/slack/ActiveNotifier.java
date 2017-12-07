@@ -136,7 +136,8 @@ public class ActiveNotifier implements FineGrainedNotifier {
                 || (result == Result.SUCCESS && notifier.getNotifySuccess())
                 || (result == Result.UNSTABLE && notifier.getNotifyUnstable())) {
             getSlack(r).publish(getBuildStatusMessage(r, notifier.includeTestSummary(),
-                    notifier.includeFailedTests(), notifier.includeCustomMessage(), notifier.includeCustomSuccessMessage()), getBuildColor(r));
+                    notifier.includeFailedTests(), notifier.includeCustomMessage(),
+                    notifier.includeCustomSuccessMessage(), notifier.includeCustomFailureMessage()), getBuildColor(r));
             if (notifier.getCommitInfoChoice().showAnything()) {
                 getSlack(r).publish(getCommitList(r), getBuildColor(r));
             }
@@ -255,10 +256,11 @@ public class ActiveNotifier implements FineGrainedNotifier {
     }
 
     String getBuildStatusMessage(AbstractBuild r, boolean includeTestSummary, boolean includeFailedTests, boolean includeCustomMessage) {
-        return getBuildStatusMessage(r, includeTestSummary, includeFailedTests, includeCustomMessage, false);
+        return getBuildStatusMessage(r, includeTestSummary, includeFailedTests, includeCustomMessage, false, false);
     }
 
-    String getBuildStatusMessage(AbstractBuild r, boolean includeTestSummary, boolean includeFailedTests, boolean includeCustomMessage, boolean includeCustomSuccessMessage) {
+    String getBuildStatusMessage(AbstractBuild r, boolean includeTestSummary, boolean includeFailedTests, boolean includeCustomMessage,
+            boolean includeCustomSuccessMessage, boolean includeCustomFailureMessage) {
         MessageBuilder message = new MessageBuilder(notifier, r);
         Result result = r.getResult();
         message.appendStatusMessage();
@@ -270,9 +272,11 @@ public class ActiveNotifier implements FineGrainedNotifier {
         if (includeFailedTests) {
             message.appendFailedTests();
         }
-        //TODO: Append success message
+        //TODO: Append all specific messages
         if (result == Result.SUCCESS && includeCustomSuccessMessage) {
             message.appendCustomSuccessMessage();
+        } else if (result == Result.FAILURE && includeCustomFailureMessage) {
+            message.appendCustomFailureMessage();
         }
         if (includeCustomMessage) {
             message.appendCustomMessage();
@@ -442,8 +446,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
             return this;
         }
 
-        public MessageBuilder appendCustomMessage() {
-            String customMessage = notifier.getCustomMessage();
+        public MessageBuilder appendMessage(String customMessage) {
             EnvVars envVars = new EnvVars();
             try {
                 envVars = build.getEnvironment(new LogTaskListener(logger, INFO));
@@ -457,20 +460,19 @@ public class ActiveNotifier implements FineGrainedNotifier {
             return this;
         }
 
-        //TODO: AppendSuccessMessage
+        public MessageBuilder appendCustomMessage() {
+            String customMessage = notifier.getCustomMessage();
+            return appendMessage(customMessage);
+        }
+
         public MessageBuilder appendCustomSuccessMessage() {
             String customMessage = notifier.getCustomSuccessMessage();
-            EnvVars envVars = new EnvVars();
-            try {
-                envVars = build.getEnvironment(new LogTaskListener(logger, INFO));
-            } catch (IOException e) {
-                logger.log(SEVERE, e.getMessage(), e);
-            } catch (InterruptedException e) {
-                logger.log(SEVERE, e.getMessage(), e);
-            }
-            message.append("\n");
-            message.append(envVars.expand(customMessage));
-            return this;
+            return appendMessage(customMessage);
+        }
+
+        public MessageBuilder appendCustomFailureMessage() {
+            String customMessage = notifier.getCustomFailureMessage();
+            return appendMessage(customMessage);
         }
 
         private String createBackToNormalDurationString(){
