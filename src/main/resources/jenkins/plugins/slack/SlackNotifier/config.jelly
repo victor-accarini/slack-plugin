@@ -20,6 +20,13 @@
         <f:checkbox name="slackNotifySuccess" value="true" checked="${instance.getNotifySuccess()}"/>
     </f:entry>
 
+    <f:optionalBlock name="includeCustomSuccessMessage" title="Include Custom Success Message" checked="${instance.includeCustomSuccessMessage()}">
+        <f:entry title="Custom Success Message" help="/plugin/slack/help-projectConfig-slackCustomSuccessMessage.html">
+            <f:textarea name="customSuccessMessage" value="${instance.getCustomSuccessMessage()}"/>
+        </f:entry>
+    </f:optionalBlock>
+
+
     <f:entry title="Notify Unstable">
         <f:checkbox name="slackNotifyUnstable" value="true" checked="${instance.getNotifyUnstable()}"/>
     </f:entry>

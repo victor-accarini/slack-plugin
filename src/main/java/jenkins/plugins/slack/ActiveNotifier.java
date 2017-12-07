@@ -446,7 +446,9 @@ public class ActiveNotifier implements FineGrainedNotifier {
             message.append(envVars.expand(customMessage));
             return this;
         }
-        
+
+        //TODO: AppendSuccessMessage
+
         private String createBackToNormalDurationString(){
             // This status code guarantees that the previous build fails and has been successful before
             // The back to normal time is the time since the build first broke
